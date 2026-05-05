@@ -165,6 +165,75 @@ def _effective_preset_for_base(preset: str, base: str) -> str:
     return preset
 
 
+def _build_theme_apply_kw() -> tuple[str, dict, str]:
+    """``apply_kw`` passed to ``facade.theme.apply`` plus effective preset and primary override text."""
+    effective = _effective_preset_for_base(
+        st.session_state.demo_preset,
+        st.session_state.demo_base,
+    )
+    kw: dict = {
+        "preset": effective,
+        "base": st.session_state.demo_base,
+        "radius": st.session_state.demo_radius,
+    }
+    if effective == "electric":
+        kw["font_sans"] = _facade_theme_mod._PRESETS["electric"]["font_sans"]
+        kw["font_link"] = (
+            "https://fonts.googleapis.com/css2?"
+            "family=Montserrat:wght@400;500;600;700&display=swap"
+        )
+    else:
+        kw["font_sans"] = "DM Sans"
+        kw["font_link"] = (
+            "https://fonts.googleapis.com/css2?"
+            "family=DM+Sans:wght@400;500;600;700&display=swap"
+        )
+    primary_ov = (st.session_state.demo_primary or "").strip()
+    if primary_ov:
+        kw["primary"] = primary_ov
+    return effective, kw, primary_ov
+
+
+def _resolved_tokens_for_streamlit_theme(apply_kw: dict) -> dict:
+    """Mirror ``facade.theme.apply`` token merge (subset used for Streamlit `[theme]`)."""
+    presets = _facade_theme_mod._PRESETS
+    radius_map = _facade_theme_mod._RADIUS_MAP
+    preset = apply_kw["preset"]
+    tokens = dict(presets.get(preset, presets["default"]))
+    overrides = {
+        "primary": apply_kw.get("primary"),
+        "primary_foreground": apply_kw.get("primary_foreground"),
+        "background": apply_kw.get("background"),
+        "foreground": apply_kw.get("foreground"),
+        "muted": apply_kw.get("muted"),
+        "muted_foreground": apply_kw.get("muted_foreground"),
+        "border": apply_kw.get("border"),
+        "destructive": apply_kw.get("destructive"),
+        "chrome_background": apply_kw.get("chrome_background"),
+        "chrome_foreground": apply_kw.get("chrome_foreground"),
+        "chrome_border": apply_kw.get("chrome_border"),
+        "font_sans": apply_kw.get("font_sans"),
+        "font_mono": apply_kw.get("font_mono"),
+        "radius": apply_kw.get("radius"),
+    }
+    for k, v in overrides.items():
+        if v is not None:
+            tokens[k] = radius_map.get(v, v) if k == "radius" else v
+    return tokens
+
+
+def _suggested_streamlit_theme_toml(tokens: dict, base: str) -> str:
+    """Same shape as ``facade.theme._write_config`` would persist (without writing)."""
+    return (
+        "[theme]\n"
+        f'base = "{base}"\n'
+        f'primaryColor = "{tokens["primary"]}"\n'
+        f'backgroundColor = "{tokens["background"]}"\n'
+        f'secondaryBackgroundColor = "{tokens["muted"]}"\n'
+        f'textColor = "{tokens["foreground"]}"\n'
+    )
+
+
 _app_dir = Path(__file__).resolve().parent
 _favicon = _app_dir / "img" / "favicon.ico"
 
@@ -221,30 +290,34 @@ with facade.Sidebar(
         placeholder="#1059A0",
     )
 
-_effective_preset = _effective_preset_for_base(
-    st.session_state.demo_preset,
-    st.session_state.demo_base,
-)
-apply_kw = {
-    "preset": _effective_preset,
-    "base": st.session_state.demo_base,
-    "radius": st.session_state.demo_radius,
-}
-if _effective_preset == "electric":
-    apply_kw["font_sans"] = _facade_theme_mod._PRESETS["electric"]["font_sans"]
-    apply_kw["font_link"] = (
-        "https://fonts.googleapis.com/css2?"
-        "family=Montserrat:wght@400;500;600;700&display=swap"
+    _effective_preset, apply_kw, primary_ov = _build_theme_apply_kw()
+    # Sidebar: avoid st.markdown/st.caption here — inline code gets light fills and washes out on chrome.
+    _mono = (
+        "font-family:var(--font-mono);background:transparent;color:inherit;"
+        "padding:0;border:none;font-size:0.8125rem;"
     )
-else:
-    apply_kw["font_sans"] = "DM Sans"
-    apply_kw["font_link"] = (
-        "https://fonts.googleapis.com/css2?"
-        "family=DM+Sans:wght@400;500;600;700&display=swap"
+    st.html(
+        "<p style=\"margin:0 0 0.35rem 0;padding:0;font-size:0.875rem;line-height:1.4;"
+        "color:var(--chrome-foreground);font-family:var(--font-sans);\">"
+        "<strong>Suggested</strong> "
+        f"<code style=\"{_mono}\">.streamlit/config.toml</code>"
+        "</p>"
     )
-primary_ov = (st.session_state.demo_primary or "").strip()
-if primary_ov:
-    apply_kw["primary"] = primary_ov
+    st.html(
+        "<p style=\"margin:0;padding:0;font-size:0.8125rem;line-height:1.35;"
+        "color:var(--chrome-foreground);font-family:var(--font-sans);\">"
+        "Suggested "
+        f"<code style=\"{_mono}\">[theme]</code>"
+        " block if you paste into "
+        f"<code style=\"{_mono}\">.streamlit/config.toml</code>"
+        " (this playground does not write the file)."
+        "</p>"
+    )
+    _cfg_tokens = _resolved_tokens_for_streamlit_theme(apply_kw)
+    st.code(
+        _suggested_streamlit_theme_toml(_cfg_tokens, apply_kw["base"]),
+        language="toml",
+    )
 
 facade.theme.apply(**apply_kw)
 
