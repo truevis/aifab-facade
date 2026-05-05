@@ -5,13 +5,6 @@ display, icons, and utilities from https://github.com/itsdaniyalm/streamlit-faca
 
 from __future__ import annotations
 
-import logging
-
-# Per-request lines (health checks polling /healthz) come from Tornado or Uvicorn
-# access logs; keep them off the terminal unless something errors.
-logging.getLogger("tornado.access").setLevel(logging.ERROR)
-logging.getLogger("uvicorn.access").setLevel(logging.ERROR)
-
 import importlib
 import datetime
 import time
