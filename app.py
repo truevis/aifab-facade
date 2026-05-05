@@ -34,6 +34,14 @@ _facade_theme_mod._PRESETS["electric"] = {
     "radius": "0.5rem",
 }
 
+def _preserve_streamlit_config(*_args, **_kwargs) -> bool:
+    """Skip façade's config.toml write so the repo `[theme]` block is never overwritten."""
+    return False
+
+
+# façade.theme.apply() normally persists `[theme]` and triggers st.rerun(); patch keeps CSS-only theming.
+_facade_theme_mod._write_config = _preserve_streamlit_config
+
 
 def _facade_link_button_compat(
     label: str,
@@ -133,9 +141,8 @@ PRESETS = [
     "daniyal",
 ]
 
-# streamlit-facade applies preset colors via CSS; ``base`` alone only updates
-# ``.streamlit/config.toml`` for Streamlit chrome. Map light↔dark preset pairs
-# so the Base radio actually swaps façade tokens where pairs exist.
+# streamlit-facade applies preset colors via CSS (config.toml stays unchanged).
+# Map light↔dark preset pairs so the Base radio swaps façade tokens where pairs exist.
 _PRESET_LIGHT_TO_DARK: dict[str, str] = {
     "default": "default-dark",
     "carbon-sage": "carbon-sage-dark",
