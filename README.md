@@ -31,6 +31,6 @@ streamlit run app.py
 
 The app reads Streamlit config from `.streamlit/config.toml` when present.
 
-## Repository
+## Live app
 
-This playground lives at [github.com/truevis/aifab-facade](https://github.com/truevis/aifab-facade).
+The app is hosted at [aifab-facade.streamlit.app](https://aifab-facade.streamlit.app/).
