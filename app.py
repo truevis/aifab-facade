@@ -8,6 +8,7 @@ from __future__ import annotations
 import importlib
 import datetime
 import time
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
@@ -157,8 +158,12 @@ def _effective_preset_for_base(preset: str, base: str) -> str:
     return preset
 
 
+_app_dir = Path(__file__).resolve().parent
+_favicon = _app_dir / "img" / "favicon.ico"
+
 st.set_page_config(
     page_title="streamlit-facade playground",
+    page_icon=str(_favicon),
     layout="wide",
     initial_sidebar_state="expanded",
 )
