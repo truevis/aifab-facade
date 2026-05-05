@@ -179,9 +179,15 @@ for key, val in defaults.items():
     if key not in st.session_state:
         st.session_state[key] = val
 
+_UPSTREAM_REPO = "https://github.com/itsdaniyalm/streamlit-facade"
 with facade.Sidebar(
     title="Playground",
-    footer=f"streamlit-facade · facade v{facade.__version__}",
+    footer=(
+        "Shadcn-inspired UI components for Streamlit. "
+        f"This app vendors the <code>facade</code> package (v{facade.__version__}). "
+        f'Upstream: <a href="{_UPSTREAM_REPO}" target="_blank" rel="noopener noreferrer">'
+        "streamlit-facade on GitHub</a>."
+    ),
     dividers=True,
 ):
     st.markdown("**Theme**")

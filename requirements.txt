@@ -1,3 +1,2 @@
 streamlit>=1.35.0
-streamlit-facade>=0.1.6
 pandas>=2.0

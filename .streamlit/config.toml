@@ -1,11 +1,6 @@
-[global]
-# Quieter console: suppress per-request lines (e.g. GET /healthz from probes).
-# Streamlit only lowers Tornado access noise when this is false (see server.py).
-developmentMode = false
-
 [theme]
 base = "light"
-primaryColor = "#8FAF3D"
-backgroundColor = "#F7F7F5"
-secondaryBackgroundColor = "#EEEDE9"
-textColor = "#1A1A18"
+primaryColor = "#F42814"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#E8E6E6"
+textColor = "#000000"
