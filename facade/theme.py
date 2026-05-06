@@ -541,33 +541,27 @@ def apply(
                 color: var(--foreground) !important;
                 margin-bottom: 0.25rem !important;
             }
-            div[data-testid="stSlider"] [data-testid="stThumbValue"] {
+            div[data-testid="stSlider"] [data-testid="stSliderThumbValue"] {
+                font-family: var(--font-sans) !important;
+                font-size: 0.8rem !important;
+            }
+            div[data-testid="stSlider"] [data-testid="stSliderTickBar"] {
                 font-family: var(--font-sans) !important;
                 font-size: 0.8rem !important;
                 color: var(--muted-foreground) !important;
             }
-            div[data-testid="stSlider"] [data-testid="stTickBarMin"],
-            div[data-testid="stSlider"] [data-testid="stTickBarMax"] {
-                font-family: var(--font-sans) !important;
-                font-size: 0.8rem !important;
-                color: var(--muted-foreground) !important;
-            }
-            div[data-testid="stSlider"] [data-testid="stThumbValue"] *,
-            div[data-testid="stSlider"] [data-testid="stTickBarMin"] *,
-            div[data-testid="stSlider"] [data-testid="stTickBarMax"] * {
+            div[data-testid="stSlider"] [data-testid="stSliderThumbValue"] *,
+            div[data-testid="stSlider"] [data-testid="stSliderTickBar"] * {
                 font-family: var(--font-sans) !important;
                 font-size: 0.8rem !important;
             }
-            div[data-testid="stSlider"] [role="slider"] {
-                background-color: var(--primary) !important;
-                border-color: var(--primary) !important;
-            }
-            div[data-testid="stSlider"] [data-testid="stSliderTrack"] > div:first-child {
-                background-color: var(--border) !important;
-            }
-            div[data-testid="stSlider"] [data-testid="stSliderTrack"] > div:nth-child(2) {
-                background-color: var(--primary) !important;
-            }
+            /*
+             * Thumb and inner-track fill colors come from Streamlit's themed
+             * Uber Baseweb palette (derived from `[theme]` / session). Do not
+             * paint `[role='slider']` with `var(--primary)` — that duplicates
+             * the facade token layer and clashes with InnerTrack gradients
+             * when `:root --primary` and `theme.primaryColor` differ.
+             */
 
             /* ── DatePicker ── */
             div[data-testid="stDateInput"] {
